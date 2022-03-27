@@ -2,12 +2,17 @@
 
 use App\Http\Controllers\CountController;
 use App\Http\Request;
+use App\Views\View;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 require_once 'vendor/autoload.php';
 
 session_start();
 
 $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
+    $r->addRoute('GET', '/', [CountController::class, 'home']);
+
     $r->addRoute('GET', '/increment', [CountController::class, 'increment']);
     $r->addRoute('GET', '/decrement', [CountController::class, 'decrement']);
 });
@@ -26,7 +31,14 @@ switch ($response) {
     case FastRoute\Dispatcher::FOUND:
         [$controller, $method] = $handler;
 
-        (new $controller)->{$method}();
+        $response = (new $controller)->{$method}($vars);
+
+        if ($response instanceof View) {
+            $loader = new FilesystemLoader('src/Views');
+            $twig = new Environment($loader);
+
+            echo $twig->render($response->getPath(), $response->getVariables());
+        }
 
         break;
 }

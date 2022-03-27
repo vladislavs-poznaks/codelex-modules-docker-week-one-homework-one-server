@@ -1,7 +1,7 @@
 FROM nginx:stable-alpine
 
 # Adding labels
-LABEL version="Docker-week-one-homework-one-server"
+LABEL version="Docker-week-one-homework-one-bonus-server"
 LABEL author="Vladislavs Poznaks"
 
 # Updating packages
